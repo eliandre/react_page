@@ -1,3 +1,5 @@
+import Modal from './Modal';
+
 function Todo(props) {
 
     function deleteHandler() {
