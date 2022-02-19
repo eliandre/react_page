@@ -1,32 +1,46 @@
+import { useState, useEffect } from 'react';
 import MeetupList from '../components/meetups/MeetupList';
 
-const DUMMY_DATA = [
-    {
-        id: 'm1',
-        title: 'See on esimene kohtumine',
-        image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/2560px-Stadtbild_M%C3%BCnchen.jpg',
-        address: 'Kohtumiste allee 5, 12345 Tartu linn',
-        description:
-            'See on esimene kohtumine. Ära maha maga!',
-    },
-    {
-        id: 'm2',
-        title: 'See on teine kohtumine',
-        image:
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/2560px-Stadtbild_M%C3%BCnchen.jpg',
-        address: 'Kohtumiste allee 5, 12345 Tartu linn',
-        description:
-            'See on teine kohtumine. Ära maha maga!',
-    },
-]
 
 function AllMeetupsPage() {
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadedMeetups, setLoadedMeetups] = useState([]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetch('https://react-page-db594-default-rtdb.europe-west1.firebasedatabase.app/meetups.json'
+    ).then(response => {
+        return response.json()
+    }).then((data) => { 
+        const meetups = [];
+
+        for(const key in data) {
+            const meetup = {
+                id: key,
+                ...data[key]
+            };
+
+            meetups.push(meetup);
+        }
+
+        setIsLoading(false);
+        setLoadedMeetups(meetups);
+    });
+    }, [])
+
+    if(isLoading) {
+        return(
+            <section>
+                <p>Laadimine...</p>
+            </section>
+        );
+    }
 
     return (
         <section>
             <h1>Kõik kohtumised</h1>
-            <MeetupList meetups={DUMMY_DATA} />
+            <MeetupList meetups={loadedMeetups} />
         </section>
     );
 };
